@@ -120,4 +120,24 @@ client.on('voiceStateUpdate', async (a, b) => {
   if (b.channelId !== null) { post("📥", b.id, b.channelId, "Join To", "AQUA") }
 })
 
+client.on('guildMemberAdd', async (message) => {
+  if (message.guild.id !== guildID && b.guild.id !== guildID) return;
+  let room = client.channels.cache.get(channel_log);
+  let embed = new MessageEmbed()
+  .setColor("GREEN")
+  .setAuthor(`🚪 ${message.user.username}#${message.user.discriminator} Join Server`,`https://cdn.discordapp.com/avatars/${message.user.id}/${message.user.avatar}`)
+  .setTimestamp()
+  room.send({embeds : [embed]})
+})
+
+client.on('guildMemberRemove', async (message) => {
+  if (message.guild.id !== guildID && b.guild.id !== guildID) return;
+  let room = client.channels.cache.get(channel_log);
+  let embed = new MessageEmbed()
+  .setColor("RED")
+  .setAuthor(`🚪 ${message.user.username}#${message.user.discriminator} Leave Server`,`https://cdn.discordapp.com/avatars/${message.user.id}/${message.user.avatar}`)
+  .setTimestamp()
+  room.send({embeds : [embed]})
+})
+
 client.login(token);
