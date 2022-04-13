@@ -39,6 +39,7 @@ client.on('channelCreate', async (message) => {
   if (message.guild.id !== guildID) return;
   async function post(title) {
     let room = await client.channels.cache.get(channel_log);
+    if(room === undefined) return console.log(' Undefined Send Channel Log ');
     let embed = await new MessageEmbed()
       .setColor("GREEN")
       .setAuthor(`🆕 Channel ${title} Created : ${message.name}`)
@@ -59,6 +60,7 @@ client.on('channelDelete', async (message) => {
   if (message.guild.id !== guildID) return;
   async function post(title) {
     let room = await client.channels.cache.get(channel_log);
+    if(room === undefined) return console.log(' Undefined Send Channel Log ');
     let embed = await new MessageEmbed()
       .setColor("RED")
       .setAuthor(`🗑 Channel ${title} Deleted : ${message.name}`)
@@ -80,6 +82,7 @@ client.on('channelPinsUpdate', async (message, date, urls) => {
 
   async function post(status, title) {
     let room = await client.channels.cache.get(channel_log);
+    if(room === undefined) return console.log(' Undefined Send Channel Log ');
     let embed = await new MessageEmbed()
       .setColor(`${status}`)
       .setAuthor(`📌 ${title} Channel ${message.name}`, '', urls)
@@ -99,6 +102,7 @@ client.on('channelUpdate', async (MessageOld, MessageNew) => {
   }
   if (MessageOld.type === "GUILD_VOICE") {
     let room = await client.channels.cache.get(channel_log);
+    if(room === undefined) return console.log(' Undefined Send Channel Log ');
     let embed = await new MessageEmbed()
       .setAuthor(`🔊 Room ${MessageOld.name} Update.`)
       .setColor("BLURPLE")
@@ -111,7 +115,7 @@ UserLimit : ${MessageOld.userLimit === 0 ? 'Unlimit' : MessageOld.userLimit} -> 
       .setTimestamp()
     await room.send({ embeds: [embed] })
   }
-  // if(message.type === "GUILD_CATEGORY") {}
+  //if(message.type === "GUILD_CATEGORY") {}
   // if(message.type === "GUILD_NEWS") {}
   // if(message.type === "GUILD_STORE") {}
   // if(message.type === "GUILD_STAGE_VOICE") {}
@@ -121,26 +125,29 @@ client.on('voiceStateUpdate', async (a, b) => {
   if (a.guild.id !== guildID && b.guild.id !== guildID) return;
 
   async function post(icon, id, idroom, status, color) {
-    let room = await client.channels.cache.get(channel_log);;
+    let room = await client.channels.cache.get(channel_log);
+    if(room === undefined) return console.log(' Undefined Send Channel Log ');
     let nameroom = client.channels.cache.get(idroom)
     let name = client.users.cache.get(id)
 
     let embed = await new MessageEmbed()
       .setColor(color)
       .setAuthor(`${name.username}#${name.discriminator}`, `https://cdn.discordapp.com/avatars/${name.id}/${name.avatar}`)
-      .setDescription(`${icon} <@${name.id}> ${status} \`${nameroom.name}\``)
+      .setDescription(`${icon} <@${name.id}> ${status} \`${nameroom.name}\` [${id}] `)
       .setTimestamp()
     await room.send({ embeds: [embed] })
   }
 
-  if (a.channelId !== null) { post("📤", a.id, a.channelId, "Leave for", "RED") }
-  if (b.channelId !== null) { post("📥", b.id, b.channelId, "Join To", "AQUA") }
+  if (a.channelId !== null && b.channelId === null) { post("📤", a.id, a.channelId, "Leave for", "RED") }
+  if (a.channelId !== null && b.channelId !== null) { post("🦼", b.id, b.channelId, "Move to", "YELLOW") }
+  if (b.channelId !== null && a.channelId === null) { post("📥", b.id, b.channelId, "Join To", "AQUA") }
 })
 
 
 client.on('guildMemberAdd', async (message) => {
   if (message.guild.id !== guildID && b.guild.id !== guildID) return;
-  let room = await client.channels.cache.get(channel_log);;
+  let room = await client.channels.cache.get(channel_log);
+  if(room === undefined) return console.log(' Undefined Send Channel Log ');
   let embed = await new MessageEmbed()
     .setColor("GREEN")
     .setAuthor(`🚪 ${message.user.username}#${message.user.discriminator} Join Server`, `https://cdn.discordapp.com/avatars/${message.user.id}/${message.user.avatar}`)
@@ -150,7 +157,8 @@ client.on('guildMemberAdd', async (message) => {
 
 client.on('guildMemberRemove', async (message) => {
   if (message.guild.id !== guildID) return;
-  let room =  await client.channels.cache.get(channel_log);;
+  let room = await client.channels.cache.get(channel_log)
+  if(room === undefined) return console.log(' Undefined Send Channel Log ');
   let embed = await new MessageEmbed()
     .setColor("RED")
     .setAuthor(`🚪 ${message.user.username}#${message.user.discriminator} Leave Server`, `https://cdn.discordapp.com/avatars/${message.user.id}/${message.user.avatar}`)
@@ -162,4 +170,4 @@ client.on('rateLimit',async (limit) => {
  await console.log(limit ? `* RateLimit In ${(limit.timeout / 1000).toFixed(2)}s a new command will be sent.` : '')
 })
 
-client.login(token);
+client.login(token).catch('Token Undefined');
