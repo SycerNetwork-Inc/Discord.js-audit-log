@@ -105,3 +105,4 @@ dist
 config.json
 package-lock.json
 *.json
+config.json
